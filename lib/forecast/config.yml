@@ -1,0 +1,7 @@
+forecast: 
+  provider: 
+    adapter: open_weather_map
+    api_key: bb502261bc5a7dfd
+  theme: weather_icons
+  temp_scale: metric
+  cache: true

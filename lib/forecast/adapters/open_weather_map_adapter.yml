@@ -1,0 +1,18 @@
+forecast: 
+  adapters:
+    open_weather_map:
+      conditions:  
+        200..210: Windy
+        211: Storm
+        212..299: 'Heavy Storm'
+        300..399: 'Light Rain'
+        500: 'Light Rain'
+        501: 'Rain' 
+        502..599: 'Heavy Rain'
+        600: 'Light Snow'
+        601: 'Snow'
+        602..699: 'Heavy Snow'
+        800: 'Clear'
+        801: 'Partly Cloudy'
+        802..803: 210
+        804..899: 'Mostly Cloudy'
