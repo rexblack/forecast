@@ -1,7 +1,7 @@
 class Forecast
   class Config
       
-    attr_accessor :adapters, :provider, :temp_scale, :conditions, :cache, :themes, :theme
+    attr_accessor :adapters, :provider, :temp_scale, :conditions, :cache, :themes, :theme, :config_file
     
     def initialize
       
