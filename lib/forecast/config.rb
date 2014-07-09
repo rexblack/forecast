@@ -33,7 +33,7 @@ class Forecast
           obj['forecast'].each do |k, v|
             if respond_to?("#{k}")
               o = send("#{k}")
-              if o.is_a?(Hash)
+              if v.is_a?(Hash) && o.is_a?(Hash)
                 v = deep_merge(o, v)
               end
             end
