@@ -25,10 +25,10 @@ class Forecast
     end
     
     def load(pattern)
-      puts 'load forecast pattern ' + pattern.to_s
+      # puts 'load forecast pattern ' + pattern.to_s
       Dir.glob(pattern).sort{ |a, b| a.split(/\//).length <=> b.split(/\//).length}.reverse.each do |f|
         obj = YAML.load_file(f)
-        puts 'load forecast config ' + f.to_s
+        # puts 'load forecast config ' + f.to_s
         if obj['forecast'] != nil
           obj['forecast'].each do |k, v|
             if respond_to?("#{k}")
@@ -67,7 +67,6 @@ class Forecast
     yield self.config
     # puts 'configured'
     if self.config.config_file != nil
-      puts '**** load config from file'
       self.config.load(self.config.config_file)
     end
   end
