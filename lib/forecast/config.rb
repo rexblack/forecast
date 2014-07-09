@@ -1,14 +1,14 @@
 class Forecast
   class Config
       
-    attr_accessor :adapters, :provider, :temp_scale, :conditions, :cache, :themes, :theme
+    attr_accessor :adapters, :provider, :temp_scale, :conditions, :cache, :themes, :theme, :config_file
     
     def initialize
       
-      @config_file = File.dirname(File.dirname(File.dirname(__FILE__))) + "/config/forecast.yml"
+      @config_file = nil 
+      #File.dirname(File.dirname(File.dirname(__FILE__))) + "/config/forecast.yml"
       
       self.load(File.dirname(__FILE__) + '/**/*.yml')
-      self.load(@config_file)
       
       def theme
         if @theme != nil 
@@ -25,13 +25,15 @@ class Forecast
     end
     
     def load(pattern)
+      # puts 'load forecast pattern ' + pattern.to_s
       Dir.glob(pattern).sort{ |a, b| a.split(/\//).length <=> b.split(/\//).length}.reverse.each do |f|
         obj = YAML.load_file(f)
+        # puts 'load forecast config ' + f.to_s
         if obj['forecast'] != nil
           obj['forecast'].each do |k, v|
             if respond_to?("#{k}")
               o = send("#{k}")
-              if o.is_a?(Hash)
+              if v.is_a?(Hash) && o.is_a?(Hash)
                 v = deep_merge(o, v)
               end
             end
@@ -64,10 +66,9 @@ class Forecast
   def self.configure
     yield self.config
     # puts 'configured'
-    # if self.config.config_file != nil
-      # puts 'load config from file'
-      # self.config.load(@config_file)
-    # end
+    if self.config.config_file != nil
+      self.config.load(self.config.config_file)
+    end
   end
   
   
