@@ -5,10 +5,10 @@ class Forecast
     
     def initialize
       
-      @config_file = File.dirname(File.dirname(File.dirname(__FILE__))) + "/config/forecast.yml"
+      @config_file = nil 
+      #File.dirname(File.dirname(File.dirname(__FILE__))) + "/config/forecast.yml"
       
       self.load(File.dirname(__FILE__) + '/**/*.yml')
-      self.load(@config_file)
       
       def theme
         if @theme != nil 
@@ -65,10 +65,10 @@ class Forecast
   def self.configure
     yield self.config
     # puts 'configured'
-    # if self.config.config_file != nil
-      # puts 'load config from file'
-      # self.config.load(@config_file)
-    # end
+    if self.config.config_file != nil
+      puts '**** load config from file'
+      self.config.load(self.config.config_file)
+    end
   end
   
   
