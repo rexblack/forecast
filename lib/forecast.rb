@@ -66,17 +66,25 @@ class Forecast
       
       def cache
         cache = Forecast.config.cache
-        if @cache == nil && ( cache != nil || (!!cache == cache) && cache )
+        if @cache == nil && ( cache != nil || (!!cache == cache) && cache == true )
           if !!cache == cache
             Forecast.config.cache = {
               expire: 5, 
               prefix: :forecast, 
               host: "127.0.0.1", 
-              port: "6379"
+              port: "6379", 
+              url: nil
             }
           end
+          cache_config = Forecast.config.cache
           begin
-            @cache = Redis.new(host: Forecast.config.cache['host'], port: Forecast.config.cache['port'])
+            if cache_config['url'] != nil
+              redis_url = cache_config['url']
+              uri = URI.parse(redis_url)
+              @cache = Redis.new(host: uri.host, port: uri.port, password: uri.password)
+            else
+              @cache = Redis.new(host: cache_config['host'], port: cache_config['port'])
+            end
             @cache.ping
           rescue
             puts "error connecting to redis"
