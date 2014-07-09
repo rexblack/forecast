@@ -5,52 +5,55 @@ class Forecast
     
     def initialize
       
-      # puts 'init config: ' + File.dirname(__FILE__) + '*.rb'
+      @config_file = File.dirname(File.dirname(File.dirname(__FILE__))) + "/config/forecast.yml"
       
-      #@provider = :open_weather_map
-      
-      #@conditions = {}
-      
-      #@provider = :open_weather_map
-      # @provider = :yahoo
-      # @provider = {
-        # adapter: :wunderground, 
-        # api_key: "bb502261bc5a7dfd"
-      # }
-      
-      #@temp_scale = :metric
-      
-      # @cache = {
-        # expire: 10, 
-        # prefix: 'forecast'
-      # }
-      
-      # @cache = false
-#       
-      # @theme = :weather_icons
-      
-      config = {}
-      Dir.glob(File.dirname(__FILE__) + '/**/*.yml').sort{ |a, b| a.split(/\//).length <=> b.split(/\//).length}.reverse.each do |f|
-        obj = YAML.load_file(f)
-        if obj['forecast'] != nil
-          config.merge!(obj['forecast'])
-        end
-      end
-      
-      config.each do |k, v|
-        # puts 'init config: ' + k + " -> " + v.to_s
-        send("#{k}=", v) if respond_to?("#{k}=")
-      end
+      self.load(File.dirname(__FILE__) + '/**/*.yml')
+      self.load(@config_file)
       
       def theme
-        if @theme && themes[@theme]
-          return themes[@theme]
+        if @theme != nil 
+          if @theme.is_a?(Hash)
+            return @theme
+          end
+          if themes[@theme] != nil
+            return themes[@theme]
+          end
         end
         return @theme
       end
       
     end
     
+    def load(pattern)
+      Dir.glob(pattern).sort{ |a, b| a.split(/\//).length <=> b.split(/\//).length}.reverse.each do |f|
+        obj = YAML.load_file(f)
+        if obj['forecast'] != nil
+          obj['forecast'].each do |k, v|
+            if respond_to?("#{k}")
+              o = send("#{k}")
+              if o.is_a?(Hash)
+                v = deep_merge(o, v)
+              end
+            end
+            send("#{k}=", v) if respond_to?("#{k}=")
+          end
+        end
+      end
+    end
+    
+    private 
+      
+      def deep_merge(hash, other_hash, &block)
+        other_hash.each_pair do |k,v|
+          tv = hash[k]
+          if tv.is_a?(Hash) && v.is_a?(Hash)
+            hash[k] = deep_merge(tv, v, &block)
+          else
+            hash[k] = block && tv ? block.call(k, tv, v) : v
+          end
+        end
+        hash
+      end
     
   end
   
@@ -60,5 +63,12 @@ class Forecast
   
   def self.configure
     yield self.config
+    # puts 'configured'
+    # if self.config.config_file != nil
+      # puts 'load config from file'
+      # self.config.load(@config_file)
+    # end
   end
+  
+  
 end

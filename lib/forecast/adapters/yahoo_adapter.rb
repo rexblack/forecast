@@ -37,24 +37,26 @@ class Forecast
       
       def daily(latitude, longitude)
         doc = get_rss(latitude, longitude)
-        forecasts = []
+        forecasts = Forecast::Collection.new
         if doc
           doc.elements.each('rss/channel/item/yweather:forecast') do |elem|
             forecast = Forecast.new
             elem.attributes.each() do |attr|
+              puts 'attr' + attr.to_s
               name = attr[0]
               value = attr[1]
               case name
                 when 'date'
                   forecast.date = DateTime.parse(value)
                 when 'low'
-                  forecast.temp_min = value.to_i
+                  forecast.temp_min = get_temp(value)
                 when 'high'
-                  forecast.temp_max = value.to_i
+                  forecast.temp_max = get_temp(value)
                 when 'text'
                   forecast.condition = get_condition(value)
               end
             end
+            forecast.temp = (forecast.temp_min + forecast.temp_max) / 2
             forecasts << forecast
           end
         end
