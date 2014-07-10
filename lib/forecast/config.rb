@@ -1,3 +1,4 @@
+require "yaml"
 class Forecast
   class Config
       

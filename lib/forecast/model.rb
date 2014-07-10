@@ -7,14 +7,6 @@ class Forecast
       end
     end
     
-    def icon
-      if Forecast.config.theme.is_a? Hash
-        icon = Forecast.config.theme[self.condition]
-        return icon unless icon == nil 
-      end
-      return slugify(self.condition)
-    end
-    
     def self.included(base)
       base.extend(ClassMethods)
     end
@@ -46,11 +38,6 @@ class Forecast
     
     # end
     
-    private 
-    
-      def slugify(string)
-        string.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
-      end
       
       module ClassMethods
         

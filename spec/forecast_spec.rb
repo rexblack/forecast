@@ -9,12 +9,12 @@ describe Forecast do
     end
   end
   
-  # it "current" do 
-    # puts "*** CURRENT ***"
-    # forecast = Forecast.current(54.9999, 9.534)
-    # dump_forecast(forecast)
-    # expect(forecast).not_to be_nil
-  # end
+  it "current" do 
+    puts "*** CURRENT ***"
+    forecast = Forecast.current(54.9999, 9.534)
+    dump_forecast(forecast)
+    expect(forecast).not_to be_nil
+  end
   # it "hourly" do 
     # puts "*** HOURLY FORECASTS ***"
     # forecasts = Forecast.hourly(54.9999, 9.534)
@@ -32,10 +32,10 @@ describe Forecast do
     # end
     # expect(forecasts.size).to be >= 1
   # end
-  it "select_date" do 
-    puts "*** SELECT FORECAST ***"
-    forecast = Forecast.daily(54.9999, 9.534).select_date(Time.now + (24*60*60) * 2)
-    dump_forecast(forecast)
-    expect(forecast).not_to be_nil
-  end
+  # it "select_date" do 
+    # puts "*** SELECT FORECAST ***"
+    # forecast = Forecast.daily(54.9999, 9.534).select_date(Time.now + (24*60*60) * 2)
+    # dump_forecast(forecast)
+    # expect(forecast).not_to be_nil
+  # end
 end
