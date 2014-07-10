@@ -4,7 +4,7 @@ class Forecast
   
   class Cache
     
-    attr_accessor :host, :port, :url, :password, :expire, :namespace, :model, :model_collection
+    attr_accessor :host, :port, :url, :password, :expire, :namespace, :model, :collection
     
     def initialize(object_attribute_hash = {})
       options = {
@@ -39,14 +39,14 @@ class Forecast
       if cached_result != nil
         json = JSON.parse(cached_result)
         if json.is_a?(Array)
-          result = @model_collection.new
+          result = collection.new
           json.each do |hash|
-            object = @model.new
+            object = model.new
             object.from_json(hash)
             result << object
           end
         elsif json.is_a?(Object)
-          result = @model.new
+          result = model.new
           result.from_json(json)
         end
       end

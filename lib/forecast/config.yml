@@ -3,4 +3,5 @@ forecast:
     adapter: open_weather_map
   theme: weather_icons
   temp_scale: fahrenheit
-  cache: false
+  cache:
+    url: 'redis://redistogo:223c354d9bd1f1d1b3de1a1673f26b46@angelfish.redistogo.com:10232/'
