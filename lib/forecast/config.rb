@@ -2,13 +2,11 @@ require "yaml"
 class Forecast
   class Config
       
-    attr_accessor :adapters, :provider, :temp_scale, :conditions, :cache, :themes, :theme, :config_file
+    attr_accessor :adapters, :provider, :scale, :conditions, :synonyms, :cache, :themes, :theme, :config_file
     
     def initialize
       
       @config_file = nil 
-      #File.dirname(File.dirname(File.dirname(__FILE__))) + "/config/forecast.yml"
-      
       self.load(File.dirname(__FILE__) + '/**/*.yml')
       
       def theme
@@ -26,7 +24,6 @@ class Forecast
     end
     
     def load(pattern)
-      # puts 'load forecast pattern ' + pattern.to_s
       Dir.glob(pattern).sort{ |a, b| a.split(/\//).length <=> b.split(/\//).length}.reverse.each do |f|
         obj = YAML.load_file(f)
         # puts 'load forecast config ' + f.to_s

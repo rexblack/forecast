@@ -1,0 +1,32 @@
+forecast:
+  synonyms:
+    -
+      - 'Clear'
+      - 'Sunny'
+      - 'Sunshine'
+      - 'No Clouds'
+      - 'Fair'
+      - 'Breezy'
+    -
+      - 'Light Rain'
+      - 'Drizzle'
+      - 'Light showers'
+    -
+      - 'Rain'
+      - 'Showers'
+    -
+      - 'Heavy Rain'
+      - 'Thundershowers'
+    -
+      - 'Partly Cloudy'
+      - 'Clouds Sun'
+      - 'Fog Sun'
+      - 'Few Clouds'
+    -
+      - 'Overcast'
+      - 'Cloudy'
+      - 'Clouds'
+    -
+      - 'Storm'
+      - 'Thunderstorm'
+      - 'Blizzard'
