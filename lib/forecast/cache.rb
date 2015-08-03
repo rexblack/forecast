@@ -4,16 +4,15 @@ class Forecast
   
   class Cache
     
-    attr_accessor :host, :port, :url, :password, :expire, :namespace, :model, :collection
+    attr_accessor :host, :port, :url, :password, :expire, :namespace, :invalidate
     
     def initialize(object_attribute_hash = {})
       options = {
+        invalidate: false,
         host: "127.0.0.1", 
         port: "6379", 
         expire: 10, 
-        namespace: "", 
-        model: Forecast, # must respond to to_json and from_json
-        collection: Forecast::Collection
+        namespace: ""
       }.merge!(object_attribute_hash)
       options.map do |(k, v)| 
         send("#{k}=", v) if respond_to?("#{k}=")
@@ -26,31 +25,28 @@ class Forecast
     
     def write(key, data)
       qkey = qualified_key(key)
-      puts "WRITE TO CACHE... " + qkey.to_s
       redis.set(qkey, data.to_json)
       redis.expire(qkey, expire)
     end
   
     def read(key)
-      qkey = qualified_key(key)
-      puts "READ FROM CACHE: " + qkey.to_s
-      cached_result = redis.get(qkey)
-      result = nil
-      if cached_result != nil
-        json = JSON.parse(cached_result)
-        if json.is_a?(Array)
-          result = collection.new
-          json.each do |hash|
-            object = model.new
-            object.from_json(hash)
-            result << object
+      if !invalidate
+        qkey = qualified_key(key)
+        cached_result = redis.get(qkey)
+        result = nil
+        if cached_result != nil
+          json = JSON.parse(cached_result)
+          if json.is_a?(Array)
+            result = Forecast::Collection.new
+            json.each do |hash|
+              result << get_forecast(hash)
+            end
+          elsif json.is_a?(Object)
+            result = get_forecast(json)
           end
-        elsif json.is_a?(Object)
-          result = model.new
-          result.from_json(json)
         end
+        return result
       end
-      return result
     end
     
       
@@ -63,16 +59,22 @@ class Forecast
           "#{key}"
         end
       end
+      
+      def get_forecast(hash)
+        if hash.has_key?('time')
+          hash['time'] = DateTime.parse(hash['time'])
+        end
+        Forecast.new(hash)
+      end
     
       def connect
-        puts "connect: " + host.to_s + ", " + port.to_s
         redis = nil
         if url != nil
           uri = URI.parse(url)
-          puts "connecting to redis with url #{url}..."
+          #puts "Connecting to redis with url #{url}..."
           redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
         elsif host != nil && port != nil
-          puts "connecting to redis on host #{host} at port #{port}..."
+          #puts "Connecting to redis on host #{host} at port #{port}..."
           redis = Redis.new(host: host, port: port)
         end
         return redis
