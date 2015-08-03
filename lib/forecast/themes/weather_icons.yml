@@ -1,10 +1,12 @@
 forecast: 
   themes: 
-    weather_icons: 
-      Clear: "wi wi-day-sunny"
-      Partly Cloudy: "wi wi-day-sunny-overcast"
-      Cloudy: "wi wi-day-cloudy"
-      Mostly Cloudy: "wi wi-cloudy"
-      Light Rain: "wi wi-showers"
-      Rain: "wi wi-rain"
-      Heavy Rain: "wi wi-rain"
+    weather_icons:
+      prefix: 'wi wi-'
+      conditions:
+        Clear: "day-sunny"
+        Partly Cloudy: "sunny-overcast"
+        Cloudy: "day-cloudy"
+        Mostly Cloudy: "cloudy"
+        Light Rain: "showers"
+        Rain: "rain"
+        Heavy Rain: "rain"
