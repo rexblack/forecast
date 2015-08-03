@@ -1,5 +1,5 @@
 forecast:
-  conditions: 
+  conditions:
     100: 'Clear'
     200: 'Partly Cloudy'
     210: 'Cloudy'
@@ -9,4 +9,4 @@ forecast:
     320: 'Heavy Rain'
     400: 'Light Snow'
     410: 'Snow'
-    500: 'Thunderstorm'
+    501: 'Storm'
