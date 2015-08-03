@@ -6,29 +6,20 @@ class Forecast
       
       def current(latitude, longitude)
         forecast = nil
-        result = get_json(api_url('conditions', latitude, longitude))
-        if result
-          item = result['current_observation']
-          forecast = Forecast.new(latitude: latitude, longitude: longitude)
-          forecast.date = Time.rfc822(item['observation_time_rfc822'])
-          forecast.temp = get_temp(item['temp_f'])
-          forecast.condition = get_condition([item['weather']])
-          forecast.orig_condition = item['weather']
+        result = Forecast::Utils.get_json(url('conditions', latitude, longitude))
+        if result.has_key?('current_observation')
+          forecast = get_current_forecast(result['current_observation'].merge({latitude: latitude, longitude: longitude}))
         end
         return forecast
       end
       
       def hourly(latitude, longitude)
         forecasts = Forecast::Collection.new
-        result = get_json(api_url('hourly', latitude, longitude))
-        if result
+        result = Forecast::Utils.get_json(url('hourly', latitude, longitude))
+        if result.has_key?('hourly_forecast')
           items = result['hourly_forecast']
           items.each do |item|
-            forecast = Forecast.new(latitude: latitude, longitude:longitude)
-            forecast.date = Time.at(item['FCTTIME']['epoch'].to_i).to_datetime
-            forecast.temp = get_temp(item['temp']['english'])
-            forecast.condition = get_condition([item['condition']])
-            forecast.orig_condition = item['condition']
+            forecast = get_hourly_forecast(item.merge({latitude: latitude, longitude: longitude}))
             forecasts << forecast
            end
         end
@@ -37,17 +28,11 @@ class Forecast
       
       def daily(latitude, longitude)
         forecasts = Forecast::Collection.new
-        result = get_json(api_url('forecast', latitude, longitude))
-        if result
+        result = Forecast::Utils.get_json(url('forecast', latitude, longitude))
+        if result.has_key?('forecast')
           items = result['forecast']['simpleforecast']['forecastday']
           items.each do |item|
-            forecast = Forecast.new(latitude: latitude, longitude:longitude)
-            forecast.date = Time.at(item['date']['epoch'].to_i).to_datetime
-            forecast.temp_min = get_temp(item['low']['fahrenheit'])
-            forecast.temp_max = get_temp(item['high']['fahrenheit'])
-            forecast.temp = (forecast.temp_min + forecast.temp_max) / 2
-            forecast.condition = get_condition([item['conditions']])
-            forecast.orig_condition = item['conditions']
+            forecast = get_daily_forecast(item.merge({latitude: latitude, longitude: longitude}))
             forecasts << forecast
            end
         end
@@ -55,10 +40,40 @@ class Forecast
       end
       
       private 
-          
-        def api_url(action, latitude, longitude)
-          url = "http://api.wunderground.com/api/#{options['api_key']}/#{action}/q/#{latitude},#{longitude}.json"
+        
+        def url(action, latitude, longitude)
+          url = "http://api.wunderground.com/api/#{options[:api_key]}/#{action}/q/#{latitude},#{longitude}.json"
         end
+        
+        def get_current_forecast(hash = {})
+          forecast = Forecast.new(hash)
+          forecast.time = get_time(hash['observation_epoch'])
+          forecast.temperature = get_temperature(hash['temp_f'], :fahrenheit)
+          forecast.condition = get_condition(hash['weather'])
+          forecast.text = get_text(hash['weather'])
+          return forecast
+        end
+        
+        def get_hourly_forecast(hash = {})
+          forecast = Forecast.new(hash)
+          forecast.time = get_time(hash['FCTTIME']['epoch'])
+          forecast.temperature = get_temperature(hash['temp']['english'], :fahrenheit)
+          forecast.condition = get_condition([hash['condition']])
+          forecast.text = get_text(hash['condition'])
+          return forecast
+        end
+        
+        def get_daily_forecast(hash = {})
+          forecast = Forecast.new(hash)
+          forecast.time = get_time(hash['date']['epoch'])
+          forecast.temperature_min = get_temperature(hash['low']['fahrenheit'], :fahrenheit)
+          forecast.temperature_max = get_temperature(hash['high']['fahrenheit'], :fahrenheit)
+          forecast.temperature = get_temperature([hash['low']['fahrenheit'], hash['high']['fahrenheit']], :fahrenheit)
+          forecast.condition = get_condition(hash['conditions'])
+          forecast.text = get_text(hash['conditions'])
+          return forecast
+        end
+        
       
     end
   end

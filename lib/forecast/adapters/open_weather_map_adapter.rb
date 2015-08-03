@@ -6,39 +6,19 @@ class Forecast
       
       def current(latitude, longitude)
         forecast = nil
-        result = get_json(api_url('weather', latitude, longitude))
+        result = Forecast::Utils.get_json(url('weather', latitude, longitude))
         if result
-          forecast = Forecast.new(latitude: latitude, longitude: longitude)
-          forecast.date = Time.at(result['dt']).to_datetime
-          forecast.temp = get_temp(kelvin_to_fahrenheit(result['main']['temp'])) 
-          result['weather'].each do |obj|
-            condition = get_condition(obj['description'])
-            if condition != nil
-              forecast.condition = condition
-              break
-            end 
-          end
+          forecast = get_forecast(result.merge({latitude: latitude, longitude: longitude}))
         end
         return forecast
       end
       
       def hourly(latitude, longitude)
         forecasts = Forecast::Collection.new
-        result = get_json(api_url('forecast', latitude, longitude))
+        result = Forecast::Utils.get_json(url('forecast', latitude, longitude))
         if result
           result['list'].each do |item|
-            forecast = Forecast.new(latitude: latitude, longitude:longitude)
-            forecast.date = Time.at(item['dt']).to_datetime
-            forecast.temp = get_temp(kelvin_to_fahrenheit(item['main']['temp']))
-            item['weather'].each do |obj|
-              condition = get_condition([obj['description'], obj['id']])
-              if condition != nil
-                forecast.condition = condition
-                break
-              end 
-            end
-            # forecast.temp_min = item['main']['temp_min']
-            # forecast.temp_max = item['main']['temp_max']
+            forecast = get_forecast(item.merge({latitude: latitude, longitude: longitude}))
             forecasts << forecast
           end
         end
@@ -47,28 +27,19 @@ class Forecast
       
       def daily(latitude, longitude)
         forecasts = Forecast::Collection.new
-        result = get_json(api_url('forecast/daily', latitude, longitude))
-        result['list'].each do |item|
-          forecast = Forecast.new(latitude: latitude, longitude:longitude)
-          forecast.date = Time.at(item['dt'])
-          forecast.temp_min = get_temp(kelvin_to_fahrenheit(item['temp']['min']))
-          forecast.temp_max = get_temp(kelvin_to_fahrenheit(item['temp']['max']))
-          forecast.temp = (forecast.temp_min + forecast.temp_max) / 2
-          item['weather'].each do |obj|
-            condition = get_condition(obj['description'])
-            if condition != nil
-              forecast.condition = condition
-              break
-            end 
+        result = Forecast::Utils.get_json(url('forecast/daily', latitude, longitude))
+        if result
+          result['list'].each do |item|
+            forecast = get_forecast(item.merge({latitude: latitude, longitude: longitude}))
+            forecasts << forecast
           end
-          forecasts << forecast
         end
         return forecasts
       end
       
       private
       
-        def api_url(action, latitude, longitude)
+        def url(action, latitude, longitude)
           url = "http://api.openweathermap.org/data/2.5/#{action}"
           params = {
             lat: latitude, 
@@ -81,8 +52,22 @@ class Forecast
           return url + "?" + query_string
         end
         
-        def kelvin_to_fahrenheit(kelvin)
-          return ((kelvin - 273.15) * 1.8000 + 32).round
+        def get_forecast(hash)
+          forecast = Forecast.new(hash)
+          forecast.time = get_time(hash['dt'])
+          forecast.temperature = get_temperature(hash.has_key?('main') ? hash['main']['temp'] : hash['temp']['day'], :kelvin)
+          forecast.temperature_min = get_temperature(hash.has_key?('main') ? hash['main']['temp_min'] : hash['temp']['min'], :kelvin)
+          forecast.temperature_max = get_temperature(hash.has_key?('main') ? hash['main']['temp_max'] : hash['temp']['max'], :kelvin)
+          forecast.temperature = ((forecast.temperature_min + forecast.temperature_max) / 2).round
+          hash['weather'].each do |obj|
+            condition = get_condition([obj['description'], obj['main']])
+            if condition != nil
+              forecast.text = get_text(obj['description'])
+              forecast.condition = condition
+              break
+            end
+          end
+          return forecast
         end
       
     end
