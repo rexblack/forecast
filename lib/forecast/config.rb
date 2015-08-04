@@ -7,6 +7,7 @@ class Forecast
     def initialize
       
       @config_file = nil 
+      @provider||= :open_weather_map
       self.load(File.dirname(__FILE__) + '/**/*.yml')
       
       def theme
@@ -20,8 +21,8 @@ class Forecast
         end
         return @theme
       end
-      
     end
+    
     
     def load(pattern)
       Dir.glob(pattern).sort{ |a, b| a.split(/\//).length <=> b.split(/\//).length}.reverse.each do |f|

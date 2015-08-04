@@ -1,5 +1,4 @@
 forecast: 
-  provider: 
-    adapter: open_weather_map
+  provider: open_weather_map
   theme: weather_icons
-  temp_scale: fahrenheit
+  scale: fahrenheit
