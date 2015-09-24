@@ -24,3 +24,6 @@ dump.rdb
 # GFM Preview
 .README.md.html
 .CHANGELOG.md.html
+
+# API Test keys
+api_keys.txt
