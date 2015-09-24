@@ -46,7 +46,7 @@ class Forecast
   # class
   class << self
   
-    def currently(latitude, longitude)
+    def current(latitude, longitude)
       result = nil
       if cache != nil
         result = cache.read("current:#{latitude},#{longitude}")
