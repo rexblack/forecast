@@ -52,12 +52,13 @@ class Forecast
       result = nil
       if cache != nil
         result = cache.read("current:#{latitude},#{longitude}")
+        if result != nil
+          puts 'get from cache'
+        end
       end
       if result == nil && adapter.respond_to?(:current)
         result = adapter.current(latitude, longitude)
-        if cache != nil
-          cache.write("current:#{latitude},#{longitude}", result)
-        end
+        cache.write("current:#{latitude},#{longitude}", result)
       end
       return result
     end
@@ -66,12 +67,13 @@ class Forecast
       result = nil
       if cache != nil
         result = cache.read("hourly:#{latitude},#{longitude}")
+        if result != nil
+          puts 'get from cache'
+        end
       end
       if result == nil && adapter.respond_to?(:hourly)
         result = adapter.hourly(latitude, longitude)
-        if cache != nil
-          cache.write("hourly:#{latitude},#{longitude}", result)
-        end
+        cache.write("hourly:#{latitude},#{longitude}", result)
       end
       return result
     end
@@ -80,12 +82,13 @@ class Forecast
       result = nil
       if cache != nil
         result = cache.read("daily:#{latitude},#{longitude}")
+        if result != nil
+          puts 'get from cache'
+        end
       end
       if result == nil && adapter.respond_to?(:daily)
         result = adapter.daily(latitude, longitude)
-        if cache != nil
-          cache.write("daily:#{latitude},#{longitude}", result)
-        end
+        cache.write("daily:#{latitude},#{longitude}", result)
       end
       return result
     end
