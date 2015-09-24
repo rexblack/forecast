@@ -1,0 +1,68 @@
+#!/usr/bin/env ruby
+
+lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
+
+require 'forecast'
+require 'optparse'
+require 'ostruct'
+
+# Get Constants
+providers = Dir.glob(lib + '/forecast/adapters/*.*').map{ |f| File.basename(f, '_adapter.rb') };
+
+# Parse Arguments
+options = OpenStruct.new
+OptionParser.new do |opt|
+  opt.banner = "Usage: forecast COMMAND [OPTIONS]"
+  opt.separator  ""
+  opt.separator  "Commands"
+  opt.separator  "     current: get current weather"
+  opt.separator  "     daily: get daily forecasts"
+  opt.separator  "     hourly: get hourly forecasts"
+  opt.separator  ""
+  opt.separator  "Options"
+
+  opt.on('-l', '--location LAT,LNG', 'Location') { |o| options.location = o }
+  opt.on('-p', '--provider PROVIDER', 'Supported API Providers: ' + Forecast::PROVIDERS.join(', ')) { |p| options.provider = p }
+  opt.on('-a', '--api_key API_KEY', 'Apply an api key if neccessary') { |a| options.api_key = a }
+  opt.on('-s', '--scale SCALE', 'Scale: one of celsius, fahrenheit or kelvin') { |s| options.scale = s }
+end.parse!
+
+# Setup Options
+command = ARGV[0] || 'current'
+location = options.location.split(/,\s*/)
+latitude = location[0].to_f
+longitude = location[1].to_f
+
+# Configure Forecast
+Forecast.configure do |config|
+  config.scale = options.scale.to_sym if options.scale
+  config.provider = options.provider.to_sym if options.provider
+  if options.api_key
+    config.adapters||= {}
+    config.adapters[config.provider] = {
+      api_key: options.api_key
+    }
+  end
+end
+
+# Get forecasts
+forecasts  = []
+case command
+  when 'current'
+    forecasts = [Forecast.current(latitude, longitude)]
+  when 'daily'
+    forecasts = Forecast.daily(latitude, longitude)
+  when 'hourly'
+    forecasts = Forecast.hourly(latitude, longitude)
+  else
+end
+
+# Output
+forecasts.each do |forecast|
+  if forecast != nil
+    puts forecast.time.strftime("%F %T") + " | " + forecast.temperature.to_s + "° | " + forecast.condition.to_s
+  else
+    puts 'nil'
+  end
+end
