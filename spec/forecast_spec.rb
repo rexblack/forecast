@@ -15,22 +15,8 @@ describe Forecast do
   
   # Configure Forecast
   Forecast.configure do |config|
-    config.cache = {
-      invalidate: true,
-      expire: 1 * 60 * 60 * 24, 
-      prefix: 'forecast',
-      url: "redis://redistogo:223c354d9bd1f1d1b3de1a1673f26b46@angelfish.redistogo.com:10232/"
-    }
     config.scale = :celsius
-    config.adapters = {
-      wunderground: {
-        api_key: 'bb502261bc5a7dfd'
-      },
-      forecast_io: {
-        api_key: '1a050f2e96fd3e830e0f80b813cf3220'
-      }
-    }
-    config.provider = :forecast_io
+    config.provider = :open_weather_map
   end
   
   def dump_forecast(forecast)
