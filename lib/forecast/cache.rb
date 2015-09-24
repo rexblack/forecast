@@ -4,7 +4,7 @@ class Forecast
   
   class Cache
     
-    attr_accessor :host, :port, :url, :password, :expire, :namespace, :invalidate
+    attr_accessor :host, :port, :url, :password, :expire, :name, :invalidate
     
     def initialize(object_attribute_hash = {})
       options = {
@@ -12,7 +12,7 @@ class Forecast
         host: "127.0.0.1", 
         port: "6379", 
         expire: 10, 
-        namespace: ""
+        name: ""
       }.merge!(object_attribute_hash)
       options.map do |(k, v)| 
         send("#{k}=", v) if respond_to?("#{k}=")
@@ -48,13 +48,12 @@ class Forecast
         return result
       end
     end
-    
       
     private
     
       def qualified_key(key)
-        if namespace != nil && namespace.length > 0
-          "#{namespace}:#{key}"
+        if name != nil && name.length > 0
+          "Forecast:#{Forecast::VERSION}:#{name}:#{key}"
         else
           "#{key}"
         end
