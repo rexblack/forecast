@@ -12,6 +12,8 @@ require "forecast/cache"
 
 class Forecast
   
+  PROVIDERS = Dir.glob(File.expand_path(File.dirname(__FILE__) + '/forecast/adapters/*.*')).map{ |f| File.basename(f, '_adapter.rb') };
+  
   def method_missing(method, *args, &block)
     @source.send(method, *args, &block)
   end
