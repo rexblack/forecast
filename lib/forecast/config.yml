@@ -1,4 +1,4 @@
 forecast: 
   provider: open_weather_map
   theme: weather_icons
-  scale: fahrenheit
+  scale: celsius
