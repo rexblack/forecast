@@ -46,7 +46,7 @@ class Forecast
         end
         
         def get_current_forecast(hash = {})
-          forecast = Forecast.new(hash)
+          forecast = Forecast.new()
           forecast.time = get_time(hash['observation_epoch'])
           forecast.temperature = get_temperature(hash['temp_f'], :fahrenheit)
           forecast.condition = get_condition(hash['weather'])
@@ -55,7 +55,7 @@ class Forecast
         end
         
         def get_hourly_forecast(hash = {})
-          forecast = Forecast.new(hash)
+          forecast = Forecast.new()
           forecast.time = get_time(hash['FCTTIME']['epoch'])
           forecast.temperature = get_temperature(hash['temp']['english'], :fahrenheit)
           forecast.condition = get_condition([hash['condition']])
@@ -64,7 +64,7 @@ class Forecast
         end
         
         def get_daily_forecast(hash = {})
-          forecast = Forecast.new(hash)
+          forecast = Forecast.new()
           forecast.time = get_time(hash['date']['epoch'])
           forecast.temperature_min = get_temperature(hash['low']['fahrenheit'], :fahrenheit)
           forecast.temperature_max = get_temperature(hash['high']['fahrenheit'], :fahrenheit)
