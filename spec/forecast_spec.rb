@@ -3,7 +3,7 @@ require 'forecast'
 
 describe Forecast do
   
-  location = 'Sidney'
+  location = 'Hamburg'
   
   # Load Fixtures
   locations = YAML.load_file(File.expand_path(File.dirname(__FILE__) + "/fixtures/locations.yml"))
