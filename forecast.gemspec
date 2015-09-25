@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Forecast::VERSION
   spec.authors       = ["Rafael Nowrotek"]
   spec.email         = ["mail@benignware.com"]
-  spec.summary       = %q{A Forecast-Multi-API-Wrapper with a unified model and integrated caching}
-  spec.description   = %q{A Forecast-Multi-API-Wrapper with a unified model and integrated caching}
+  spec.summary       = %q{Forecast Multi-API-Wrapper with unified model and integrated caching}
+  spec.description   = %q{Forecast Multi-API-Wrapper with unified model and integrated caching}
   spec.homepage      = ""
   spec.license       = "MIT"
 

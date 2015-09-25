@@ -1,7 +1,7 @@
 forecast
 ========
 
-> A Forecast-Multi-API-Wrapper with a unified model and integrated caching
+> Forecast Multi-API-Wrapper with unified model and integrated caching
 
 ## API Support
 
