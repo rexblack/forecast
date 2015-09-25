@@ -13,10 +13,10 @@ forecast
 
 ## Fetch
 
-#### Forecast.currently( latitude, longitude )
+#### Forecast.current( latitude, longitude )
 Get the current weather for a specified location
 ```ruby
-forecast = Forecast.currently(54.9999, 9.534)
+forecast = Forecast.current(54.9999, 9.534)
 ```
 
 #### Forecast.hourly( latitude, longitude )
@@ -192,6 +192,23 @@ forecast:
       Snow: 'icon-snow'
       Heavy Snow: 'icon-snow'
       Thunderstorm: 'icon-thunderstorm'
+```
+
+## Command Line Interface
+
+```cli
+Usage: forecast COMMAND [OPTIONS]
+
+Commands
+     current: get current weather
+     daily: get daily forecasts
+     hourly: get hourly forecasts
+
+Options
+    -l, --location LAT,LNG           Location
+    -p, --provider PROVIDER          Supported API Providers: forecast_io, open_weather_map, wunderground, yahoo
+    -a, --api_key API_KEY            Apply an api key if neccessary
+    -s, --scale SCALE                Scale: one of celsius, fahrenheit or kelvin
 ```
 
 ## Run Tests
