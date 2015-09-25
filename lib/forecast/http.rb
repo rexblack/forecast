@@ -18,10 +18,10 @@ class Forecast
         if cache_options.has_key?(:url)
           url = cache_options[:url]
           uri = URI.parse(url)
-          puts "Connecting to redis with url #{url}..."
+          #puts "Connecting to redis with url #{url}..."
           @cache = Redis.new(host: uri.host, port: uri.port, password: uri.password)
         elsif host != nil && port != nil
-          puts "Connecting to redis on host #{host} at port #{port}..."
+          #puts "Connecting to redis on host #{host} at port #{port}..."
           @cache = Redis.new(host: cache_options[:host], port: cache_options[:port])
         end
       end
@@ -31,7 +31,7 @@ class Forecast
       if @cache && (!@options[:cache].has_key?(:invalidate) || !@options[:cache][:invalidate])
         data = @cache.get(url)
         if data
-          puts 'Read from cache... ' + url
+          #puts 'Read from cache... ' + url
           return data
         end
       end
@@ -39,12 +39,12 @@ class Forecast
         query_string = URI.encode_www_form(params)
         url = url + "?" + query_string
       end
-      puts 'Get url... ' + url
+      #puts 'Get url... ' + url
       resp = Net::HTTP.get_response(URI.parse(url))
       data = resp.body
       if data
         if @cache
-          puts 'Write to cache... ' + url
+          #puts 'Write to cache... ' + url
           @cache.set(url, data)
           if @options[:cache] && @options[:cache].has_key?(:expire)
             @cache.expire(url, @options[:cache][:expire])
