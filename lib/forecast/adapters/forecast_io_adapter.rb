@@ -38,9 +38,9 @@ class Forecast
           forecast.time = get_time(hash['time'])
           forecast.condition = get_condition(hash['summary'])
           forecast.text = get_text(hash['summary'])
-          forecast.temperature_min = get_temperature(hash['temperatureMin'])
-          forecast.temperature_max = get_temperature(hash['temperatureMax'])
-          forecast.temperature = get_temperature(hash.has_key?('temperature') ? hash['temperature'] : [hash['temperatureMin'], hash['temperatureMax']])
+          forecast.temperature_min = get_temperature(hash['temperatureMin'], :fahrenheit)
+          forecast.temperature_max = get_temperature(hash['temperatureMax'], :fahrenheit)
+          forecast.temperature = get_temperature(hash.has_key?('temperature') ? hash['temperature'] : [hash['temperatureMin'], hash['temperatureMax']], :fahrenheit)
           return forecast
         end
       
