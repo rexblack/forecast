@@ -17,7 +17,7 @@ class Forecast
               hash[attr[0].to_sym] = attr[1]
             end
           end
-          forecast = get_forecast(hash)
+          forecast = get_forecast({latitude: latitude, longitude: longitude}.merge(hash))
         end
         return forecast
       end
@@ -36,7 +36,7 @@ class Forecast
             elem.attributes.each() do |attr|
               hash[attr[0].to_sym] = attr[1]
             end
-            forecasts << get_forecast(hash)
+            forecasts << get_forecast({latitude: latitude, longitude: longitude}.merge(hash))
           end
         end
         return forecasts
@@ -66,6 +66,8 @@ class Forecast
         
         def get_forecast(hash)
           forecast = Forecast.new
+          forecast.latitude = hash[:latitude]
+          forecast.longitude = hash[:longitude]
           forecast.time = get_time(hash[:date])
           forecast.condition = get_condition(hash[:text])
           forecast.text = get_text(hash[:text])

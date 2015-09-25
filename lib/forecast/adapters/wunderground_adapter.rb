@@ -18,8 +18,8 @@ class Forecast
         result = get_json(get_action('hourly', latitude, longitude))
         if result.has_key?('hourly_forecast')
           items = result['hourly_forecast']
-          items.each do |item|
-            forecast = get_hourly_forecast(item.merge({latitude: latitude, longitude: longitude}))
+          items.each do |hash|
+            forecast = get_hourly_forecast(hash.merge({latitude: latitude, longitude: longitude}))
             forecasts << forecast
            end
         end
@@ -31,8 +31,8 @@ class Forecast
         result = get_json(get_action('forecast', latitude, longitude))
         if result.has_key?('forecast')
           items = result['forecast']['simpleforecast']['forecastday']
-          items.each do |item|
-            forecast = get_daily_forecast(item.merge({latitude: latitude, longitude: longitude}))
+          items.each do |hash|
+            forecast = get_daily_forecast(hash.merge({latitude: latitude, longitude: longitude}))
             forecasts << forecast
            end
         end
@@ -46,7 +46,10 @@ class Forecast
         end
         
         def get_current_forecast(hash = {})
+          puts 'forecast hash: ' + hash.to_s
           forecast = Forecast.new()
+          forecast.latitude = hash[:latitude]
+          forecast.longitude = hash[:longitude]
           forecast.time = get_time(hash['observation_epoch'])
           forecast.temperature = get_temperature(hash['temp_f'], :fahrenheit)
           forecast.condition = get_condition(hash['weather'])
@@ -55,7 +58,10 @@ class Forecast
         end
         
         def get_hourly_forecast(hash = {})
+          puts 'forecast hash: ' + hash.to_s
           forecast = Forecast.new()
+          forecast.latitude = hash[:latitude]
+          forecast.longitude = hash[:longitude]
           forecast.time = get_time(hash['FCTTIME']['epoch'])
           forecast.temperature = get_temperature(hash['temp']['english'], :fahrenheit)
           forecast.condition = get_condition([hash['condition']])
@@ -64,7 +70,10 @@ class Forecast
         end
         
         def get_daily_forecast(hash = {})
+          puts 'forecast hash: ' + hash.to_s
           forecast = Forecast.new()
+          forecast.latitude = hash[:latitude]
+          forecast.longitude = hash[:longitude]
           forecast.time = get_time(hash['date']['epoch'])
           forecast.temperature_min = get_temperature(hash['low']['fahrenheit'], :fahrenheit)
           forecast.temperature_max = get_temperature(hash['high']['fahrenheit'], :fahrenheit)

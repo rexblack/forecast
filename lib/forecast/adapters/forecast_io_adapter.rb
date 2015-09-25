@@ -6,14 +6,14 @@ class Forecast
       
       def current(latitude, longitude)
         result = get_json(get_action(latitude, longitude))
-        get_forecast(result['currently']) unless nil
+        get_forecast({latitude: latitude, longitude: longitude}.merge(result['currently'])) unless nil
       end
       
       def hourly(latitude, longitude)
         result = get_json(get_action(latitude, longitude))
         forecasts = Forecast::Collection.new
-        result['hourly']['data'].each do |item|
-          forecasts << get_forecast(item)
+        result['hourly']['data'].each do |hash|
+          forecasts << get_forecast({latitude: latitude, longitude: longitude}.merge(hash))
         end
         return forecasts
       end
@@ -21,8 +21,8 @@ class Forecast
       def daily(latitude, longitude)
         result = get_json(get_action(latitude, longitude))
         forecasts = Forecast::Collection.new
-        result['daily']['data'].each do |item|
-          forecasts << get_forecast(item)
+        result['daily']['data'].each do |hash|
+          forecasts << get_forecast({latitude: latitude, longitude: longitude}.merge(hash))
         end
         return forecasts
       end
@@ -30,11 +30,14 @@ class Forecast
       private
       
         def get_action(latitude, longitude)
-          return "https://api.forecast.io/forecast/#{options[:api_key]}/#{latitude},#{longitude}"
+          api_key = options[:api_key]
+          return "https://api.forecast.io/forecast/#{api_key}/#{latitude},#{longitude}"
         end
         
         def get_forecast(hash)
           forecast = Forecast.new(hash)
+          forecast.latitude = hash[:latitude]
+          forecast.longitude = hash[:longitude]
           forecast.time = get_time(hash['time'])
           forecast.condition = get_condition(hash['summary'])
           forecast.text = get_text(hash['summary'])

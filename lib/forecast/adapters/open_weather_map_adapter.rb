@@ -5,9 +5,9 @@ class Forecast
       include Forecast::Adapter
       
       def current(latitude, longitude)
-        json = get_json(get_action('weather', latitude, longitude))
-        if json
-          result = get_forecast(json)
+        hash = get_json(get_action('weather', latitude, longitude))
+        if hash
+          result = get_forecast({latitude: latitude, longitude: longitude}.merge(hash))
           return result
         end
       end
@@ -17,7 +17,7 @@ class Forecast
         result = Forecast::Collection.new
         if json && json.has_key?('list')
           json['list'].each do |hash|
-            result << get_forecast(hash)
+            result << get_forecast({latitude: latitude, longitude: longitude}.merge(hash))
           end
         end
         return result
@@ -29,7 +29,7 @@ class Forecast
         if json && json.has_key?('list')
           result = Forecast::Collection.new
           json['list'].each do |hash|
-            result << get_forecast(hash)
+            result << get_forecast({latitude: latitude, longitude: longitude}.merge(hash))
           end
         end
         return result
@@ -39,6 +39,8 @@ class Forecast
       
         def get_forecast(hash = {})
           forecast = Forecast.new()
+          forecast.latitude = hash[:latitude]
+          forecast.longitude = hash[:longitude]
           forecast.time = get_time(hash['dt'])
           forecast.temperature = get_temperature(hash.has_key?('main') ? hash['main']['temp'] : hash['temp']['day'], :kelvin)
           forecast.temperature_min = get_temperature(hash.has_key?('main') ? hash['main']['temp_min'] : hash['temp']['min'], :kelvin)
