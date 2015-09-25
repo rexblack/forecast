@@ -15,12 +15,6 @@ describe Forecast do
   
   # Configure Forecast
   Forecast.configure do |config|
-    config.cache = {
-      invalidate: false,
-      expire: 1 * 60 * 60, 
-      prefix: 'forecast',
-      url: "redis://redistogo:2e14b2948045bfc8a3f05046d4dc1d29@catfish.redistogo.com:9849/"
-    }
     config.scale = :celsius
     config.provider = :open_weather_map
   end
@@ -35,7 +29,7 @@ describe Forecast do
   
   it "current" do 
     puts "\n\n"
-    puts "> #{location.to_s} currently (" + Forecast.config.provider.to_s + ")"
+    puts "> #{location.to_s} current (" + Forecast.config.provider.to_s + ")"
     puts "*************************************************************"
     forecast = Forecast.current(latitude, longitude)
     dump_forecast(forecast)
@@ -67,7 +61,7 @@ describe Forecast do
   end
   
   it "select_time" do 
-    time = Time.now + (24 * 60 * 60)
+    time = Time.now + (24 * 60 * 60) * 1
     puts "\n\n"
     puts "> #{location.to_s} at tomorrow, #{time.strftime("%T")} (" + Forecast.config.provider.to_s + ")"
     puts "*************************************************************"
