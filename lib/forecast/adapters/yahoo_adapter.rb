@@ -32,7 +32,6 @@ class Forecast
         forecasts = Forecast::Collection.new
         if doc
           doc.elements.each('rss/channel/item/yweather:forecast') do |elem|
-            puts elem.attributes.to_s
             hash = {}
             elem.attributes.each() do |attr|
               hash[attr[0].to_sym] = attr[1]
@@ -49,7 +48,7 @@ class Forecast
           woeid = nil
           query = "SELECT * FROM geo.placefinder WHERE text='#{latitude}, #{longitude}' and gflags='R'"
           url = URL_YQL + "?q=" + URI::encode(query)
-          doc = Forecast::Utils.get_doc(url)
+          doc = get_dom(url)
           doc.elements.each('query/results/Result/woeid') do |elem|
             woeid = elem.text
           end
@@ -66,7 +65,7 @@ class Forecast
         end
         
         def get_forecast(hash)
-          forecast = Forecast.new(hash)
+          forecast = Forecast.new
           forecast.time = get_time(hash[:date])
           forecast.condition = get_condition(hash[:text])
           forecast.text = get_text(hash[:text])

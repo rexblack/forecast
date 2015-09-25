@@ -3,15 +3,14 @@ require 'rexml/document'
 require 'open-uri'
 require 'json'
 
+require 'forecast/http.rb'
+
 class Forecast
   module Adapter
     
-    @options = nil
+    attr_reader :options
     
     module ClassMethods
-      def slug
-        self.name.split('::').last.gsub(/Adapter$/, '').gsub(/(.)([A-Z])/,'\1_\2').downcase
-      end
     end
     
     def self.included(base)
@@ -41,19 +40,33 @@ class Forecast
     end
     
     def initialize(options = {})
-      @options = options
+      @options = ({cache: Forecast.config.cache}).merge(options)
+      @http = Http.new({cache: @options[:cache]})
     end
     
-    def options
-      @options
+    def current(latitude, longitude)
     end
     
-    def config
-      Forecast.config.adapters[self.class.slug] || {}
+    def hourly(latitude, longitude)
+    end
+    
+    def daily(latitude, longitude)
     end
     
     protected
     
+      def options
+        @options
+      end
+    
+      def get_json(url)
+        @http.get_json(url)
+      end
+      
+      def get_dom(url)
+        @http.get_dom(url)
+      end
+      
       def get_temperature(value, input = :fahrenheit )
         if value == nil
           value = 0
@@ -128,9 +141,6 @@ class Forecast
           similarity = 0
           synonyms.each do |synonym|
             similarity = [similarity, Forecast::Utils.word_similarity(name, synonym)].max
-            #if name == 'Thundershowers'
-              #puts "simlarity #{name} => #{synonym} : #{similarity.to_s}"
-            #end
           end
           condition_synonym_similarity[v] = similarity
         end
@@ -140,10 +150,8 @@ class Forecast
         c = c.sort { |a, b|
           a_similarity = condition_synonym_similarity[a]
           b_similarity = condition_synonym_similarity[b]
-          #puts 'cmp: ' + name + " =>  #{a} = #{b} ----> " + a_similarity.to_s + " === " + b_similarity.to_s + ""
           a_similarity <=> b_similarity
         }.reverse
-        #puts 'F: ' + c.first.to_s
         if c.first != nil
           return {
             condition: c.first,
@@ -177,7 +185,6 @@ class Forecast
           }.select {|v|
             v != nil  
           }
-          #puts similar_conditions.to_s
           similar_condition = similar_conditions.sort { |a,b|
             a[:similarity] <=> b[:similarity]
           }.reverse.first

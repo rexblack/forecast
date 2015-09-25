@@ -8,7 +8,7 @@ require "forecast/adapters/yahoo_adapter"
 require "forecast/adapters/open_weather_map_adapter"
 require "forecast/adapters/wunderground_adapter"
 require "forecast/adapters/forecast_io_adapter"
-require "forecast/cache"
+require "forecast/http"
 
 class Forecast
   
@@ -19,15 +19,15 @@ class Forecast
   end
   
   def initialize(attrs = {})
-    @source = OpenStruct.new
-    hash = Forecast::Utils.underscore(attrs)
-    hash.each do |k, v|
-      @source.send("#{k}=", v)
-    end
+    @source = OpenStruct.new(attrs)
+  end
+  
+  def as_json(options = nil)
+    @source.table.as_json(options)
   end
   
   def to_json *a
-    to_h.to_json a
+    self.marshal_dump.to_json a
   end
   
   def icon
@@ -49,64 +49,18 @@ class Forecast
   class << self
   
     def current(latitude, longitude)
-      result = nil
-      if cache != nil
-        result = cache.read("current:#{latitude},#{longitude}")
-        if result != nil
-          puts 'get from cache'
-        end
-      end
-      if result == nil && adapter.respond_to?(:current)
-        result = adapter.current(latitude, longitude)
-        cache.write("current:#{latitude},#{longitude}", result)
-      end
-      return result
+      return adapter.current(latitude, longitude)
     end
     
     def hourly(latitude, longitude)
-      result = nil
-      if cache != nil
-        result = cache.read("hourly:#{latitude},#{longitude}")
-        if result != nil
-          puts 'get from cache'
-        end
-      end
-      if result == nil && adapter.respond_to?(:hourly)
-        result = adapter.hourly(latitude, longitude)
-        cache.write("hourly:#{latitude},#{longitude}", result)
-      end
-      return result
+      return adapter.hourly(latitude, longitude)
     end
     
     def daily(latitude, longitude)
-      result = nil
-      if cache != nil
-        result = cache.read("daily:#{latitude},#{longitude}")
-        if result != nil
-          puts 'get from cache'
-        end
-      end
-      if result == nil && adapter.respond_to?(:daily)
-        result = adapter.daily(latitude, longitude)
-        cache.write("daily:#{latitude},#{longitude}", result)
-      end
-      return result
+      return adapter.daily(latitude, longitude)
     end
     
-    
     private
-    
-      def cache
-        cache_config = Forecast.config.cache
-        if @cache == nil && (!!cache_config == cache_config && cache_config == true || cache_config.is_a?(Hash))
-          if !!cache_config == cache_config
-            @cache = Forecast::Cache.new
-          else
-            @cache = Forecast::Cache.new(cache_config)
-          end
-        end
-        return @cache
-      end
     
       def adapter
         if @adapter == nil

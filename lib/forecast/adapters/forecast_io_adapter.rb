@@ -5,12 +5,12 @@ class Forecast
       include Forecast::Adapter
       
       def current(latitude, longitude)
-        result = Forecast::Utils.get_json(url(latitude, longitude))
+        result = get_json(get_action(latitude, longitude))
         get_forecast(result['currently']) unless nil
       end
       
       def hourly(latitude, longitude)
-        result = Forecast::Utils.get_json(url(latitude, longitude))
+        result = get_json(get_action(latitude, longitude))
         forecasts = Forecast::Collection.new
         result['hourly']['data'].each do |item|
           forecasts << get_forecast(item)
@@ -19,7 +19,7 @@ class Forecast
       end
       
       def daily(latitude, longitude)
-        result = Forecast::Utils.get_json(url(latitude, longitude))
+        result = get_json(get_action(latitude, longitude))
         forecasts = Forecast::Collection.new
         result['daily']['data'].each do |item|
           forecasts << get_forecast(item)
@@ -29,7 +29,7 @@ class Forecast
       
       private
       
-        def url(latitude, longitude)
+        def get_action(latitude, longitude)
           return "https://api.forecast.io/forecast/#{options[:api_key]}/#{latitude},#{longitude}"
         end
         

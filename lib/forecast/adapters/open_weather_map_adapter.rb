@@ -5,55 +5,40 @@ class Forecast
       include Forecast::Adapter
       
       def current(latitude, longitude)
-        forecast = nil
-        result = Forecast::Utils.get_json(url('weather', latitude, longitude))
-        if result
-          forecast = get_forecast(result.merge({latitude: latitude, longitude: longitude}))
+        json = get_json(get_action('weather', latitude, longitude))
+        if json
+          result = get_forecast(json)
+          return result
         end
-        return forecast
       end
       
       def hourly(latitude, longitude)
-        forecasts = Forecast::Collection.new
-        result = Forecast::Utils.get_json(url('forecast', latitude, longitude))
-        if result
-          result['list'].each do |item|
-            forecast = get_forecast(item.merge({latitude: latitude, longitude: longitude}))
-            forecasts << forecast
+        json = get_json(get_action('forecast', latitude, longitude))
+        result = Forecast::Collection.new
+        if json && json.has_key?('list')
+          json['list'].each do |hash|
+            result << get_forecast(hash)
           end
         end
-        return forecasts
+        return result
       end
       
       def daily(latitude, longitude)
-        forecasts = Forecast::Collection.new
-        result = Forecast::Utils.get_json(url('forecast/daily', latitude, longitude))
-        if result
-          result['list'].each do |item|
-            forecast = get_forecast(item.merge({latitude: latitude, longitude: longitude}))
-            forecasts << forecast
+        json = get_json(get_action('forecast/daily', latitude, longitude))
+        result = Forecast::Collection.new
+        if json && json.has_key?('list')
+          result = Forecast::Collection.new
+          json['list'].each do |hash|
+            result << get_forecast(hash)
           end
         end
-        return forecasts
+        return result
       end
       
-      private
+      protected
       
-        def url(action, latitude, longitude)
-          url = "http://api.openweathermap.org/data/2.5/#{action}"
-          params = {
-            lat: latitude, 
-            lon: longitude 
-          }
-          if options[:api_key]
-            params['APPID'] = options[:api_key]
-          end
-          query_string = URI.encode_www_form(params)
-          return url + "?" + query_string
-        end
-        
-        def get_forecast(hash)
-          forecast = Forecast.new(hash)
+        def get_forecast(hash = {})
+          forecast = Forecast.new()
           forecast.time = get_time(hash['dt'])
           forecast.temperature = get_temperature(hash.has_key?('main') ? hash['main']['temp'] : hash['temp']['day'], :kelvin)
           forecast.temperature_min = get_temperature(hash.has_key?('main') ? hash['main']['temp_min'] : hash['temp']['min'], :kelvin)
@@ -69,12 +54,23 @@ class Forecast
           end
           return forecast
         end
+        
+        
+      private
       
+        def get_action(action, latitude, longitude)
+          url = "http://api.openweathermap.org/data/2.5/#{action}"
+          params = {
+            lat: latitude, 
+            lon: longitude 
+          }
+          if options[:api_key]
+            params['APPID'] = options[:api_key]
+          end
+          query_string = URI.encode_www_form(params)
+          return url + "?" + query_string
+        end
+        
     end
   end
 end
-
-
-
-
-    

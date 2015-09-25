@@ -6,7 +6,7 @@ class Forecast
       
       def current(latitude, longitude)
         forecast = nil
-        result = Forecast::Utils.get_json(url('conditions', latitude, longitude))
+        result = get_json(get_action('conditions', latitude, longitude))
         if result.has_key?('current_observation')
           forecast = get_current_forecast(result['current_observation'].merge({latitude: latitude, longitude: longitude}))
         end
@@ -15,7 +15,7 @@ class Forecast
       
       def hourly(latitude, longitude)
         forecasts = Forecast::Collection.new
-        result = Forecast::Utils.get_json(url('hourly', latitude, longitude))
+        result = get_json(get_action('hourly', latitude, longitude))
         if result.has_key?('hourly_forecast')
           items = result['hourly_forecast']
           items.each do |item|
@@ -28,7 +28,7 @@ class Forecast
       
       def daily(latitude, longitude)
         forecasts = Forecast::Collection.new
-        result = Forecast::Utils.get_json(url('forecast', latitude, longitude))
+        result = get_json(get_action('forecast', latitude, longitude))
         if result.has_key?('forecast')
           items = result['forecast']['simpleforecast']['forecastday']
           items.each do |item|
@@ -41,7 +41,7 @@ class Forecast
       
       private 
         
-        def url(action, latitude, longitude)
+        def get_action(action, latitude, longitude)
           url = "http://api.wunderground.com/api/#{options[:api_key]}/#{action}/q/#{latitude},#{longitude}.json"
         end
         
