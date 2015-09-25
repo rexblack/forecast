@@ -71,22 +71,22 @@ class Forecast
         if value == nil
           value = 0
         elsif value.is_a?(Array)
-          value = value.inject{ |sum, v| sum.to_f + get_temperature(v) }.to_f / value.size
+          value = value.inject{ |sum, v| sum.to_f + v.to_f }.to_f() / value.size
         elsif value.is_a?(String) || value.is_a?(Numeric)
           value = value.to_f
-          if input == :fahrenheit && Forecast.config.scale.to_sym == :kelvin
-            value = Forecast::Utils.fahrenheit_to_kelvin(value)
-          elsif input == :fahrenheit && Forecast.config.scale.to_sym == :celsius
-            value = Forecast::Utils.fahrenheit_to_celsius(value)
-          elsif input == :kelvin && Forecast.config.scale.to_sym == :fahrenheit
-            value = Forecast::Utils.kelvin_to_fahrenheit(value)
-          elsif input == :kelvin && Forecast.config.scale.to_sym == :celsius
-            value = Forecast::Utils.kelvin_to_celsius(value)
-          elsif input == :celsius && Forecast.config.scale.to_sym == :fahrenheit
-            value = Forecast::Utils.celsius_to_fahrenheit(value)
-          elsif input == :celsius && Forecast.config.scale.to_sym == :kelvin
-            value = Forecast::Utils.celsius_to_kelvin(value)
-          end
+        end
+        if input == :fahrenheit && Forecast.config.scale.to_sym == :kelvin
+          value = Forecast::Utils.fahrenheit_to_kelvin(value)
+        elsif input == :fahrenheit && Forecast.config.scale.to_sym == :celsius
+          value = Forecast::Utils.fahrenheit_to_celsius(value)
+        elsif input == :kelvin && Forecast.config.scale.to_sym == :fahrenheit
+          value = Forecast::Utils.kelvin_to_fahrenheit(value)
+        elsif input == :kelvin && Forecast.config.scale.to_sym == :celsius
+          value = Forecast::Utils.kelvin_to_celsius(value)
+        elsif input == :celsius && Forecast.config.scale.to_sym == :fahrenheit
+          value = Forecast::Utils.celsius_to_fahrenheit(value)
+        elsif input == :celsius && Forecast.config.scale.to_sym == :kelvin
+          value = Forecast::Utils.celsius_to_kelvin(value)
         end
         value.round
       end
