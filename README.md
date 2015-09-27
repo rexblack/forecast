@@ -168,7 +168,6 @@ Forecast::configure do |config|
   config.config_file = Rails.root.to_s + "/config/forecast.yml"
   config.cache = {
     expire: 1 * 60 * 60, 
-    prefix: 'forecast', 
     url: "redis://xxx/"
   }
 end
