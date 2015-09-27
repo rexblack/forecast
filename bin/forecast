@@ -12,24 +12,50 @@ providers = Dir.glob(lib + '/forecast/adapters/*.*').map{ |f| File.basename(f, '
 
 # Parse Arguments
 options = OpenStruct.new
-OptionParser.new do |opt|
+optparser = OptionParser.new do |opt|
   opt.banner = "Usage: forecast COMMAND [OPTIONS]"
   opt.separator  ""
   opt.separator  "Commands"
-  opt.separator  "     current: get current weather"
+  opt.separator  "     current: get current weather [default]"
   opt.separator  "     daily: get daily forecasts"
   opt.separator  "     hourly: get hourly forecasts"
   opt.separator  ""
   opt.separator  "Options"
 
-  opt.on('-l', '--location LAT,LNG', 'Location') { |o| options.location = o }
+  opt.on('-l', '--location LAT,LNG', 'Location [required]') { |o| options.location = o }
   opt.on('-p', '--provider PROVIDER', 'Supported API Providers: ' + Forecast::PROVIDERS.join(', ')) { |p| options.provider = p }
   opt.on('-a', '--api_key API_KEY', 'Apply an api key if neccessary') { |a| options.api_key = a }
   opt.on('-s', '--scale SCALE', 'Scale: one of celsius, fahrenheit or kelvin') { |s| options.scale = s }
-end.parse!
+  opt.on('-h', '--help', 'Displays Help') do
+    puts opt
+    exit
+  end
+end
+
+optparse = optparser.parse!
+
+# Init command
+command = ARGV.shift
+
+# Use current as default command if a location has specified
+if !command && options.location.nil?
+  puts optparser.to_s
+  exit
+else
+  command = 'current'
+end
+
+# Show errors on missing mandatory options
+mandatory = [:location]                            
+mandatory.each{ |param|      
+  if options[param].nil?
+    puts "#{param.capitalize} must be specified"              
+    exit
+  end
+}
+
 
 # Setup Options
-command = ARGV[0] || 'current'
 location = options.location.split(/,\s*/)
 latitude = location[0].to_f
 longitude = location[1].to_f
