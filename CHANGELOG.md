@@ -1,7 +1,10 @@
-Changelog
----------
+forecast
+--------
+
+> Changelog
 
 ## Master
+
 * Fixed missing string conversion in average temperature
 * Cache http response instead of results
 * Basic command line interface
@@ -11,4 +14,5 @@ Changelog
 * Improved auto-mapping of conditions 
 
 ## v0.0.7
+
 * Initial release introducing core-functionality
