@@ -5,20 +5,22 @@ forecast
 
 ## Master
 
+## Enhancements
+
+* Basic command line interface
+* Added forecast.io adapter
+* Improved auto-mapping of conditions 
+
 ## Bugfix
 
 * Fixed missing string conversion in average temperature
-* Cache http response instead of results
-* Basic command line interface
-* Changed default scale to `celsius`
-* Renamed method current to currently
-* Added forecast.io
-* Improved auto-mapping of conditions 
+* Fixed cache inconsistencies by caching http response instead of results
 
 ## Deprecation
 
 * Removed option `prefix` from cache
-
+* Renamed method current to currently
+* Changed default scale to `celsius`
 
 ## v0.0.7
 
