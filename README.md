@@ -199,15 +199,16 @@ forecast:
 Usage: forecast COMMAND [OPTIONS]
 
 Commands
-     current: get current weather
+     current: get current weather [default]
      daily: get daily forecasts
      hourly: get hourly forecasts
 
 Options
-    -l, --location LAT,LNG           Location
+    -l, --location LAT,LNG           Location [required]
     -p, --provider PROVIDER          Supported API Providers: forecast_io, open_weather_map, wunderground, yahoo
     -a, --api_key API_KEY            Apply an api key if neccessary
     -s, --scale SCALE                Scale: one of celsius, fahrenheit or kelvin
+    -h, --help                       Displays Help
 ```
 
 ## Run Tests
