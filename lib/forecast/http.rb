@@ -29,7 +29,8 @@ class Forecast
     
     def get(url, params = {})
       if @cache && (!@options[:cache].has_key?(:invalidate) || !@options[:cache][:invalidate])
-        data = @cache.get(url)
+        key = get_key(url)
+        data = @cache.get(key)
         if data
           #puts 'Read from cache... ' + url
           return data
@@ -45,9 +46,10 @@ class Forecast
       if data
         if @cache
           #puts 'Write to cache... ' + url
-          @cache.set(url, data)
+          key = get_key(url)
+          @cache.set(key, data)
           if @options[:cache] && @options[:cache].has_key?(:expire)
-            @cache.expire(url, @options[:cache][:expire])
+            @cache.expire(key, @options[:cache][:expire])
           end
         end
         return data
@@ -67,6 +69,12 @@ class Forecast
         return REXML::Document.new(data)
       end
     end
+    
+    
+    private 
+      def get_key(url)
+        "Forecast::Http::" + url
+      end
     
   end
 end
