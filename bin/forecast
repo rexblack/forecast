@@ -37,12 +37,16 @@ optparse = optparser.parse!
 # Init command
 command = ARGV.shift
 
-# Use current as default command if a location has specified
-if !command && options.location.nil?
-  puts optparser.to_s
-  exit
-else
-  command = 'current'
+
+if !command
+  if options.location.nil?
+    # Error: No command specified
+    puts optparser.to_s
+    exit
+  else
+    # If a location has been specified, use current as the default command
+    command = 'current'
+  end
 end
 
 # Show errors on missing mandatory options
