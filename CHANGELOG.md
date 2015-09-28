@@ -3,6 +3,12 @@ forecast
 
 > Changelog
 
+## v0.0.9
+
+## Bugfix
+
+* Fixed default command overrides user argument
+
 ## v0.0.8
 
 ## Enhancements
